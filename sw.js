@@ -1,6 +1,6 @@
 // Guarda os arquivos do jogo no celular para ele abrir sem internet.
 // Ao publicar uma versão nova, troque o número abaixo (v1, v2, v3...).
-const CACHE = 'sudoku-v1';
+const CACHE = 'sudoku-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

@@ -169,7 +169,6 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
    <button id="statsBtn"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>Estatísticas</button>
    <button id="optsBtn"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustes</button>
   </div>
-  <p class="note">O jogo fica salvo neste aparelho e funciona sem internet. No computador: teclas 1 a 9, setas, N para notas, H para dica, Backspace para apagar.</p>
  </div>
 </div>
 
@@ -576,7 +575,7 @@ function startGame(lv,daily){
  });
 }
 function openNew(){
- $('#lvls').innerHTML=Object.entries(LV).map(([k,o])=>{const L=lvS(k);return'<button class="lvl" data-lv="'+k+'"><b>'+o.n+'</b><span>'+['','Só os básicos','Pede candidatos travados','Pede pares e trios','Pede X-Wing ou XY-Wing'][o.tier]+(L.best?'<br>Recorde '+fmt(L.best):'')+'</span></button>'}).join('');
+ $('#lvls').innerHTML=Object.entries(LV).map(([k,o])=>{const L=lvS(k);return'<button class="lvl" data-lv="'+k+'"><b>'+o.n+'</b>'+(L.best?'<span>Recorde '+fmt(L.best)+'</span>':'')+'</button>'}).join('');
  $('#shP').textContent=started()?'Escolha o nível. O jogo atual conta como abandonado nas estatísticas.':'Escolha o nível.';
  closeSheets();$('#sheet').hidden=false;$('#lvls button').focus();
 }
