@@ -20,7 +20,7 @@
    LAYOUT: uma coluna no celular; tabuleiro e controles lado a lado acima de 860px */
 :root{color-scheme:light dark;
 --bg:light-dark(#ffffff,#0f131a);--ink:light-dark(#16202c,#e8ecf2);--mute:light-dark(#5b6676,#9aa5b4);
---thin:light-dark(#cdd4de,#2a3240);--thick:light-dark(#16202c,#aeb9c8);--pen:light-dark(#2347c8,#8eb0ff);
+--thin:light-dark(#cdd4de,#2a3240);--thick:light-dark(#16202c,#aeb9c8);--pen:light-dark(#2347c8,#7fa6ff);--note:light-dark(#7a8494,#7d8796);
 --peer:light-dark(#eef2f8,#171e29);--same:light-dark(#d5e0fb,#243457);--sel:light-dark(#b7caff,#33508c);
 --err:light-dark(#cf2338,#ff7383);--errbg:light-dark(#fde6e9,#3b1a21);--key:light-dark(#f0f3f8,#19202b);--keyhi:light-dark(#e1e7f1,#243042);
 --hu:light-dark(#fff3d1,#2a2513);--hp:light-dark(#cddcff,#2c4377);--ht:light-dark(#ffd2ad,#5a3216);--hx:light-dark(#c2410c,#ffa266)}
@@ -44,7 +44,7 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 .ib svg{width:20px;height:20px}
 .wrap{position:relative}
 .board{position:relative;container-type:inline-size;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));grid-template-rows:repeat(9,minmax(0,1fr));aspect-ratio:1;width:100%;border:2.5px solid var(--thick);border-radius:6px;overflow:hidden}
-.cell{all:unset;position:relative;display:grid;place-items:center;border-right:1px solid var(--thin);border-bottom:1px solid var(--thin);font-size:calc(100cqw / 9 * .58);font-weight:300;line-height:1;color:var(--pen);cursor:pointer;transition:background-color .12s}
+.cell{all:unset;position:relative;display:grid;place-items:center;border-right:1px solid var(--thin);border-bottom:1px solid var(--thin);font-size:calc(100cqw / 9 * .58);font-weight:500;line-height:1;color:var(--pen);cursor:pointer;transition:background-color .12s}
 .cell:nth-child(9n){border-right:0}.cell:nth-child(n+73){border-bottom:0}
 .lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .lines path{stroke:var(--thick);stroke-width:2.5;vector-effect:non-scaling-stroke;fill:none}
@@ -54,8 +54,8 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 .cell.hu{background:var(--hu)}.cell.hp{background:var(--hp)}.cell.ht{background:var(--ht)}
 .cell:focus-visible,.btn:focus-visible,.key:focus-visible,.tool:focus-visible,.lvl:focus-visible,.ib:focus-visible,.nav button:focus-visible,.seg button:focus-visible,.day:focus-visible{outline:3px solid var(--pen);outline-offset:2px;z-index:3}
 .notes{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6%}
-.notes span{display:grid;place-items:center;font-size:calc(100cqw / 9 * .27);font-weight:400;color:var(--mute)}
-.notes span.hl{color:var(--pen);font-weight:700}
+.notes span{display:grid;place-items:center;margin:1px;border-radius:4px;font-size:calc(100cqw / 9 * .25);font-weight:400;line-height:1;color:var(--note)}
+.notes span.hl{background:var(--same);color:var(--ink);font-weight:600}
 .notes span.x{color:var(--hx);font-weight:700;text-decoration:line-through}
 .pop{animation:pop .22s ease-out}
 @keyframes pop{from{transform:scale(.6);opacity:.3}to{transform:none;opacity:1}}
@@ -99,11 +99,12 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 .bar{height:8px;border-radius:4px;background:var(--key);overflow:hidden}.bar i{display:block;height:100%;background:var(--pen);border-radius:4px}
 .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--key);border-radius:12px;padding:4px}
 .seg button{font:inherit;font-size:14px;color:var(--ink);background:none;border:0;border-radius:9px;min-height:40px;cursor:pointer}
-.seg button.on{background:var(--bg);font-weight:500;box-shadow:0 1px 3px rgb(0 0 0 / .15)}
+.seg button.on{background:var(--pen);color:var(--bg);font-weight:500}
 .fig{position:relative;height:190px}.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 .fig text{font:12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fill:var(--mute)}
 .tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-130%)}
 .tip[hidden]{display:none}
+.row[hidden]{display:none}.row.stack{display:grid;justify-content:stretch;gap:8px}.row .stepper{display:flex}
 .row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px;border-top:1px solid var(--thin);padding:8px 0}
 .row div{display:grid}.row small{color:var(--mute);font-size:13px;line-height:1.35}
 .sw{appearance:none;flex:none;width:52px;height:32px;border-radius:999px;background:var(--thin);position:relative;cursor:pointer;margin:0;transition:background .15s}
@@ -126,6 +127,22 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 .hint h2{margin:0;font-size:20px;line-height:1.15}
 .hint p{margin:0}
 .hint .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.push{display:grid;gap:10px;border-top:1px solid var(--thin);padding-top:12px}
+.push small{display:block;color:var(--mute);font-size:13px;line-height:1.35}
+.inp{font:inherit;font-size:16px;color:var(--ink);background:var(--key);border:1px solid var(--thin);border-radius:12px;min-height:44px;padding:8px 12px;width:100%;-webkit-user-select:text;user-select:text}
+textarea.inp{font-size:13px;height:84px;resize:none;word-break:break-all}
+.inp:focus-visible{outline:3px solid var(--pen);outline-offset:1px}
+.seg.s3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stepper{display:flex;align-items:center;gap:6px;flex:none}
+.stepper button{font:inherit;font-size:20px;color:var(--ink);background:var(--key);border:0;border-radius:10px;width:44px;height:40px;cursor:pointer}
+.stepper button:disabled{opacity:.35;cursor:default}
+.stepper b{min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+.adv{border-top:1px solid var(--thin);padding-top:4px}
+.adv summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:500}
+.adv[open] summary{margin-bottom:4px}
+.range{width:100%;accent-color:var(--pen);height:32px}
+.autobar{display:grid}.autobar[hidden],.nav[hidden]{display:none}
+.autobar .btn{min-height:48px;font-size:15px}
 .toast{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:20;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;width:max-content;max-width:calc(100% - 32px);text-align:center}
 .toast[hidden]{display:none}
 @media(min-width:600px){.sheet{align-items:center}.hint{bottom:16px;border-radius:20px}}
@@ -164,6 +181,7 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
    <button class="tool" id="hintBtn"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>Dica</button>
   </div>
   <div class="pad" id="pad"></div>
+  <div class="autobar" id="autoBar" hidden><button class="btn pri" id="autoGo">Completar o tabuleiro</button></div>
   <div class="nav">
    <button id="dailyBtn"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Desafio</button>
    <button id="statsBtn"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>Estatísticas</button>
@@ -202,7 +220,7 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 <div class="sheet" id="over" hidden>
  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="oT">
   <h2 id="oT">Fim de jogo</h2>
-  <p>Você chegou a 3 erros. A partida conta como não vencida nas estatísticas.</p>
+  <p id="oTxt">Você chegou ao limite de erros. A partida conta como não vencida nas estatísticas.</p>
   <button class="btn pri" id="retryBtn">Recomeçar este jogo</button>
   <button class="btn" id="overNew">Novo jogo</button>
   <button class="btn" data-close>Ver tabuleiro</button>
@@ -212,9 +230,24 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 <div class="sheet" id="opts" hidden>
  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="opT">
   <h2 id="opT">Ajustes</h2>
+  <div class="row stack"><span>Tema</span><div class="seg s3" id="oTheme"><button data-t="auto">Automático</button><button data-t="light">Claro</button><button data-t="dark">Escuro</button></div></div>
+  <label class="row"><div>Sons<small>Sinais curtos ao acertar, errar, vencer e perder.</small></div><input type="checkbox" class="sw" id="oSound"></label>
   <label class="row"><div>Mostrar erros na hora<small>Desligado, os erros só aparecem pela dica ou quando o tabuleiro estiver completo.</small></div><input type="checkbox" class="sw" id="oErr"></label>
-  <label class="row"><div>Limite de 3 erros<small>No terceiro erro a partida termina. Só vale com os erros visíveis.</small></div><input type="checkbox" class="sw" id="oLimit"></label>
+  <label class="row"><div>Limite de erros<small>Ao chegar no limite, a partida termina. Só vale com os erros visíveis.</small></div><input type="checkbox" class="sw" id="oLimit"></label>
+  <div class="row" id="limRow" style="border-top:0;padding-top:0"><div>Erros para perder</div><div class="stepper"><button id="limMinus" aria-label="Menos erros">−</button><b id="limN">3</b><button id="limPlus" aria-label="Mais erros">+</button></div></div>
   <label class="row"><div>Limpar notas automaticamente<small>Ao colocar um número certo, ele sai das notas da linha, da coluna e do quadrante.</small></div><input type="checkbox" class="sw" id="oClean"></label>
+  <details class="adv"><summary>Opções avançadas</summary>
+   <label class="row"><div>Completar automaticamente<small>Perto do fim, aparece um botão para o jogo preencher as casas restantes, uma por vez.</small></div><input type="checkbox" class="sw" id="oAuto"></label>
+   <div class="row stack" style="border-top:0;padding-top:0"><span>Oferecer a partir de <b id="autoPctV">90%</b> do tabuleiro preenchido</span><input type="range" class="range" id="oAutoPct" min="50" max="99" step="1" aria-label="Porcentagem para completar automaticamente"></div>
+  </details>
+  <div class="push" id="pushBox">
+   <div>Notificações<small>Receba mensagens de quem te mandou o app. Depois de ativar, copie o código e envie para essa pessoa.</small></div>
+   <input class="inp" id="pushName" placeholder="Seu nome" autocomplete="off" maxlength="30">
+   <button class="btn pri" id="pushOn">Ativar notificações</button>
+   <small id="pushSt"></small>
+   <textarea class="inp" id="pushCode" readonly hidden aria-label="Código para receber notificações"></textarea>
+   <button class="btn" id="pushCopy" hidden>Copiar código</button>
+  </div>
   <button class="btn" data-close>Pronto</button>
  </div>
 </div>
@@ -411,14 +444,28 @@ const DOW=['medio','facil','medio','medio','dificil','dificil','expert'];
 const dLevel=k=>DOW[dParse(k).getDay()];
 
 /* ---------- estado ---------- */
-const O=Object.assign({showErr:true,limit:false,autoClean:true},load(OPK)||{});
+const O=Object.assign({showErr:true,limit:false,limitN:3,autoClean:true,sound:true,theme:'auto',auto:true,autoPct:90},load(OPK)||{});
+const hostTheme=document.documentElement.getAttribute('data-theme');
+function applyTheme(){const r=document.documentElement;if(O.theme==='auto'){if(hostTheme)r.setAttribute('data-theme',hostTheme);else r.removeAttribute('data-theme')}else r.setAttribute('data-theme',O.theme)}
+applyTheme();
+let AC=null;
+const SND={ok:[[880,0,.09,'sine',.05],[1320,.05,.13,'sine',.045]],tick:[[1175,0,.07,'sine',.025]],err:[[220,0,.16,'triangle',.09],[185,.09,.22,'triangle',.08]],
+ win:[[523,0,.18,'sine',.06],[659,.11,.18,'sine',.06],[784,.22,.18,'sine',.06],[1047,.33,.45,'sine',.06]],lose:[[392,0,.22,'triangle',.07],[330,.17,.22,'triangle',.07],[262,.34,.5,'triangle',.07]]};
+function snd(k){
+ if(!O.sound)return;
+ try{
+  AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
+  const t=AC.currentTime+.01;
+  for(const[f,dt,dur,type,vol]of SND[k]){const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t+dt);g.gain.exponentialRampToValueAtTime(vol,t+dt+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dt+dur);o.connect(g).connect(AC.destination);o.start(t+dt);o.stop(t+dt+dur+.03)}
+ }catch(e){}
+}
 const oldBest=load('sudoku-best-v1')||{};
 const ST=load(STK)||{lv:{},streak:0,bs:0};
 ST.hist=ST.hist||[];ST.dd=ST.dd||{};
 const lvS=k=>ST.lv[k]||(ST.lv[k]={p:0,w:0,t:0,wt:0,best:oldBest[k]||0,perfect:0});
 Object.keys(LV).forEach(lvS);
 const saveST=()=>store(STK,ST);
-let S=null,sel=-1,notesMode=false,popped=-1,H=null,paused=false,genId=0,chartLv='medio',calM=null;
+let solving=false,S=null,sel=-1,notesMode=false,popped=-1,H=null,paused=false,genId=0,chartLv='medio',calM=null;
 const board=$('#board'),pad=$('#pad');
 const cells=[...Array(81)].map((_,i)=>{const b=document.createElement('button');b.className='cell';b.addEventListener('click',()=>{sel=i;render()});board.appendChild(b);return b});
 board.insertAdjacentHTML('beforeend','<svg class="lines" viewBox="0 0 9 9" preserveAspectRatio="none" aria-hidden="true"><path d="M3 0V9M6 0V9M0 3H9M0 6H9"/></svg>');
@@ -457,7 +504,11 @@ function render(){
  $('#lv').textContent=LV[S.lv].n;
  const bd=$('#dBadge');bd.hidden=!S.daily;if(S.daily)bd.textContent='Desafio de '+dShort(S.daily);
  $('#erWrap').hidden=!O.showErr&&!S.done;
- $('#er').textContent=S.err+(O.showErr&&O.limit?'/3':'');
+ $('#er').textContent=S.err+(O.showErr&&O.limit?'/'+O.limitN:'');
+ let ok=0,bad=0;for(let i=0;i<81;i++){if(S.val[i]===S.sol[i])ok++;else if(S.val[i])bad++}
+ const offer=O.auto&&!S.done&&!solving&&!bad&&ok<81&&ok/81*100>=O.autoPct;
+ $('#autoBar').hidden=!offer;$('.nav').hidden=offer;
+ if(offer)$('#autoGo').textContent='Completar o tabuleiro ('+(81-ok)+(81-ok===1?' casa)':' casas)');
  $('#hn').textContent=S.hints;$('#tm').textContent=fmt(S.t);
  $('#undoBtn').disabled=!S.h.length||S.done;
  for(const id of ['eraseBtn','autoBtn','hintBtn','notesBtn'])$('#'+id).disabled=S.done;
@@ -487,33 +538,49 @@ function recordEnd(won){
 function after(){
  if(!S.done&&S.val.every((v,i)=>v===S.sol[i])){
   const prev=lvS(S.lv).best;S.done=true;recordEnd(true);
-  const rec=!prev||S.t<prev;
+  const rec=!prev||S.t<prev;snd('win');
   $('#wT').textContent=S.daily?'Desafio de '+dShort(S.daily)+' resolvido':'Resolvido';
   $('#wTime').textContent=fmt(S.t);
-  $('#wInfo').textContent=LV[S.lv].n+'. Erros: '+S.err+'. Dicas: '+S.hints+'. '+(rec?(prev?'Novo recorde neste nível.':'Primeiro recorde neste nível.'):'Recorde: '+fmt(prev)+'.');
+  $('#wInfo').textContent=LV[S.lv].n+'. Erros: '+S.err+'. Dicas: '+S.hints+'. '+(S.auto?'Completado automaticamente no final. ':'')+(rec?(prev?'Novo recorde neste nível.':'Primeiro recorde neste nível.'):'Recorde: '+fmt(prev)+'.');
   setTimeout(()=>{$('#win').hidden=false;$('#winNew').focus()},350);
  }else if(!S.done&&!O.showErr&&!S.val.includes(0))toast('O tabuleiro está completo, mas há números errados. Use a dica para encontrá-los.');
  save();render();
 }
-function lose(){S.done=true;S.lost=true;recordEnd(false);save();render();setTimeout(()=>{$('#over').hidden=false;$('#retryBtn').focus()},300)}
+function lose(){S.done=true;S.lost=true;recordEnd(false);save();render();snd('lose');$('#oTxt').textContent='Você chegou a '+S.err+' erros, o limite que você definiu. A partida conta como não vencida nas estatísticas.';setTimeout(()=>{$('#over').hidden=false;$('#retryBtn').focus()},300)}
 function input(d){
- if(!S||S.done||paused||sel<0||S.puz[sel])return;
+ if(!S||S.done||paused||solving||sel<0||S.puz[sel])return;
  closeHint();
  const i=sel,v=S.val[i];
  if(notesMode){if(v)return;apply([{i,v:0,n:S.notes[i]^(1<<d)}])}
  else if(v===d)apply([{i,v:0,n:0}]);
- else{place(i,d);if(d!==S.sol[i]){S.err++;if(O.showErr&&O.limit&&S.err>=3){lose();return}}}
+ else{place(i,d);if(d!==S.sol[i]){S.err++;if(O.showErr&&O.limit&&S.err>=O.limitN){lose();return}snd('err')}else if(!S.val.every((x,k)=>x===S.sol[k]))snd('ok')}
  after();
 }
-function erase(){if(!S||S.done||paused||sel<0||S.puz[sel])return;closeHint();if(S.val[sel]||S.notes[sel])apply([{i:sel,v:0,n:0}]);after()}
-function undo(){if(!S||S.done||paused)return;closeHint();const o=S.h.pop();if(!o)return;for(const c of o){S.val[c.i]=c.v;S.notes[c.i]=c.n}after()}
+function erase(){if(!S||S.done||paused||solving||sel<0||S.puz[sel])return;closeHint();if(S.val[sel]||S.notes[sel])apply([{i:sel,v:0,n:0}]);after()}
+function undo(){if(!S||S.done||paused||solving)return;closeHint();const o=S.h.pop();if(!o)return;for(const c of o){S.val[c.i]=c.v;S.notes[c.i]=c.n}after()}
 function autoNotes(){
- if(!S||S.done||paused)return;closeHint();
+ if(!S||S.done||paused||solving)return;closeHint();
  const c=initCand(S.val,S.xe),ch=[];
  for(let i=0;i<81;i++)if(!S.val[i]&&S.notes[i]!==c[i])ch.push({i,v:0,n:c[i]});
  if(!ch.length){toast('As notas já estão completas.');return}
  apply(ch);after();toast('Notas preenchidas com todos os números possíveis.');
 }
+
+/* ---------- completar automaticamente ---------- */
+function autoSolve(){
+ if(!S||S.done||solving)return;
+ closeHint();solving=true;sel=-1;S.auto=true;
+ const rest=[];for(let i=0;i<81;i++)if(S.val[i]!==S.sol[i])rest.push(i);
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,gap=reduce?40:Math.max(70,Math.min(160,2400/rest.length));
+ render();
+ let k=0;
+ const tick=()=>{
+  if(k>=rest.length){setTimeout(()=>{solving=false;after()},260);return}
+  const i=rest[k++];S.val[i]=S.sol[i];S.notes[i]=0;popped=i;snd('tick');render();setTimeout(tick,gap);
+ };
+ setTimeout(tick,150);
+}
+$('#autoGo').addEventListener('click',autoSolve);
 
 /* ---------- dica que ensina ---------- */
 function buildHint(){
@@ -530,7 +597,7 @@ function buildHint(){
   text:'Vou revelar a casa da '+cName(bi)+', que é '+S.sol[bi]+'.'};
 }
 function showHint(){
- if(!S||S.done||paused)return;
+ if(!S||S.done||paused||solving)return;
  if(H){if(H.stage===1)hintNext();return}
  const s=buildHint();if(!s)return;
  S.hints++;save();
@@ -544,7 +611,7 @@ function hintNext(){
  if(H.stage===1){H.stage=2;$('#hText').textContent=H.s.text;$('#hNext').textContent='Aplicar';render();$('#hNext').focus();return}
  const s=H.s;closeHint();
  if(s.t==='err')apply(s.ht.map(i=>({i,v:0,n:0})));
- else if(s.place){sel=s.place[0];place(s.place[0],s.place[1])}
+ else if(s.place){sel=s.place[0];place(s.place[0],s.place[1]);if(!S.val.every((x,k)=>x===S.sol[k]))snd('ok')}
  else if(s.elim){const ch={};for(const[i,d]of s.elim){S.xe[i]|=1<<d;if(S.notes[i]>>d&1){ch[i]=(ch[i]??S.notes[i])&~(1<<d)}}apply(Object.entries(ch).map(([i,n])=>({i:+i,v:0,n})));toast('Pronto. Peça outra dica para ver o próximo passo.')}
  after();
 }
@@ -665,8 +732,20 @@ $('#resetBtn').addEventListener('click',()=>{
 });
 
 /* ---------- ajustes ---------- */
-function openOpts(){$('#oErr').checked=O.showErr;$('#oLimit').checked=O.limit;$('#oClean').checked=O.autoClean;$('#oLimit').disabled=!O.showErr;closeSheets();$('#opts').hidden=false}
-for(const[id,k]of[['oErr','showErr'],['oLimit','limit'],['oClean','autoClean']])$('#'+id).addEventListener('change',e=>{O[k]=e.target.checked;$('#oLimit').disabled=!O.showErr;store(OPK,O);render()});
+function syncOpts(){
+ $('#oErr').checked=O.showErr;$('#oLimit').checked=O.limit;$('#oClean').checked=O.autoClean;$('#oSound').checked=O.sound;$('#oAuto').checked=O.auto;
+ $('#oLimit').disabled=!O.showErr;$('#limRow').hidden=!(O.limit&&O.showErr);
+ $('#limN').textContent=O.limitN;$('#limMinus').disabled=O.limitN<=1;$('#limPlus').disabled=O.limitN>=10;
+ $('#oAutoPct').value=O.autoPct;$('#oAutoPct').disabled=!O.auto;$('#autoPctV').textContent=O.autoPct+'%';
+ $$('#oTheme button').forEach(b=>b.classList.toggle('on',b.dataset.t===O.theme));
+}
+const saveO=()=>{store(OPK,O);syncOpts();render()};
+function openOpts(){syncOpts();closeSheets();$('#opts').hidden=false}
+for(const[id,k]of[['oErr','showErr'],['oLimit','limit'],['oClean','autoClean'],['oSound','sound'],['oAuto','auto']])$('#'+id).addEventListener('change',e=>{O[k]=e.target.checked;saveO();if(k==='sound'&&O.sound)snd('ok')});
+$('#limMinus').addEventListener('click',()=>{O.limitN=Math.max(1,O.limitN-1);saveO()});
+$('#limPlus').addEventListener('click',()=>{O.limitN=Math.min(10,O.limitN+1);saveO()});
+$('#oAutoPct').addEventListener('input',e=>{O.autoPct=+e.target.value;saveO()});
+$('#oTheme').addEventListener('click',e=>{const b=e.target.closest('button');if(b){O.theme=b.dataset.t;applyTheme();saveO()}});
 
 /* ---------- pausa e eventos ---------- */
 function setPause(p){if(!S||S.done)p=false;paused=p;$('#pause').hidden=!p;if(p){closeHint();$('#resumeBtn').focus()}}
@@ -700,7 +779,7 @@ addEventListener('keydown',e=>{
  }
 });
 setInterval(()=>{
- if(!S||S.done||paused||document.hidden||anyOpen()||!$('#gen').hidden)return;
+ if(!S||S.done||paused||solving||document.hidden||anyOpen()||!$('#gen').hidden)return;
  S.t++;$('#tm').textContent=fmt(S.t);if(S.t%5===0)save();
 },1000);
 document.addEventListener('visibilitychange',save);
@@ -708,6 +787,38 @@ document.addEventListener('visibilitychange',save);
 const saved=load(KEY);
 if(saved&&Array.isArray(saved.sol)&&saved.sol.length===81&&LV[saved.lv]){S=saved;S.h=S.h||[];S.xe=S.xe||Array(81).fill(0);S.daily=S.daily||null;render()}
 else startGame('medio');
+
+const VAPID='BA2XCN3mkQwbop7K8p2nRrJiTGfnqSjBzTw6XueBEqSg1goCjDFf4mrb9iZstWUUwmQoOdRkny0Euf71kEOHoDo';
+const b64u=s=>{const b=atob((s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+const pOK='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+let pSub=null;
+const pSt=m=>$('#pushSt').textContent=m;
+function pShow(){
+ if(!pSub)return;
+ const n=($('#pushName').value||'').trim()||'sem nome';
+ $('#pushCode').value=btoa(unescape(encodeURIComponent(JSON.stringify({n,s:pSub.toJSON()}))));
+ $('#pushCode').hidden=false;$('#pushCopy').hidden=false;$('#pushOn').hidden=true;
+ pSt('Notificações ativadas para "'+n+'". Copie o código abaixo e mande para quem vai enviar as mensagens. Se mudar o nome, copie de novo.');
+}
+async function pInit(){
+ $('#pushName').value=O.pushName||'';
+ if(!pOK){$('#pushOn').hidden=true;pSt(/iPhone|iPad/.test(navigator.userAgent)?'No iPhone, as notificações só funcionam com o app adicionado à Tela de Início pelo Safari e aberto pelo ícone.':'Este navegador não aceita notificações.');return}
+ try{const reg=await navigator.serviceWorker.ready;pSub=await reg.pushManager.getSubscription()}catch(e){}
+ if(pSub)pShow();else pSt(Notification.permission==='denied'?'As notificações estão bloqueadas para este app. Libere nas configurações do celular e volte aqui.':'');
+}
+$('#pushName').addEventListener('input',()=>{O.pushName=$('#pushName').value;store(OPK,O);pShow()});
+$('#pushOn').addEventListener('click',async()=>{
+ try{
+  const p=await Notification.requestPermission();
+  if(p!=='granted'){pSt('Sem permissão, o app não consegue receber mensagens. Se você recusou, libere nas configurações do celular.');return}
+  pSt('Ativando...');
+  const reg=await navigator.serviceWorker.ready;
+  pSub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID)});
+  pShow();
+ }catch(e){pSt('Não foi possível ativar agora. Confira a internet e tente de novo. ('+e.message+')')}
+});
+$('#pushCopy').addEventListener('click',()=>{const c=$('#pushCode');navigator.clipboard.writeText(c.value).then(()=>toast('Código copiado.'),()=>{c.select();toast('Selecione o código e copie.')})});
+$('#optsBtn').addEventListener('click',pInit);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 </script>

@@ -1,6 +1,6 @@
-// Guarda os arquivos do jogo no celular para ele abrir sem internet.
-// Ao publicar uma versão nova, troque o número abaixo (v1, v2, v3...).
-const CACHE = 'sudoku-v2';
+// Guarda os arquivos do jogo no celular para ele abrir sem internet e recebe as notificações.
+// Ao publicar uma versão nova, troque o número abaixo (v3, v4, v5...).
+const CACHE = 'sudoku-v4';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -20,5 +20,21 @@ self.addEventListener('fetch', e => {
     const hit = await c.match(e.request, {ignoreSearch: true});
     const net = fetch(e.request).then(res => { if (res.ok) c.put(e.request, res.clone()); return res; }).catch(() => hit);
     return hit || net;
+  }));
+});
+
+// Mostra a mensagem enviada pelo GitHub.
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = {body: e.data ? e.data.text() : ''}; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Sudoku', {body: d.body || '', icon: 'icon-192.png', data: {url: './'}}));
+});
+
+// Ao tocar na notificação, abre o jogo.
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({type: 'window', includeUncontrolled: true}).then(cs => {
+    for (const c of cs) if ('focus' in c) return c.focus();
+    return clients.openWindow('./');
   }));
 });
