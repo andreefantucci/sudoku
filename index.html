@@ -89,6 +89,11 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 .lvl b{font-weight:500}.lvl span{font-size:13px;color:var(--mute);text-align:end}
 .lvl:active{background:var(--keyhi)}
 .big{font-size:44px;font-weight:700;line-height:1.05;color:var(--pen);font-variant-numeric:tabular-nums}
+.pts{font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.brk{display:grid;gap:4px;font-size:14px;border-top:1px solid var(--thin);border-bottom:1px solid var(--thin);padding:8px 0}
+.brk div{display:flex;justify-content:space-between;gap:12px}.brk span{color:var(--mute)}.brk b{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;font-size:14px}
+.top .n{color:var(--mute);font-variant-numeric:tabular-nums}.top b{font-variant-numeric:tabular-nums}.top span{color:var(--mute);text-align:end;white-space:nowrap}
 .tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .tile{background:var(--key);border-radius:14px;padding:12px 14px}
 .tile b{display:block;font-size:28px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -97,8 +102,8 @@ h1{margin:0;font-size:32px;line-height:1.05;font-weight:700;letter-spacing:-.02e
 .lvrow{display:grid;gap:6px;padding:12px 0 2px;border-top:1px solid var(--thin)}
 .lvrow .h{display:flex;justify-content:space-between;gap:12px;font-weight:500}.lvrow .h span{font-variant-numeric:tabular-nums}
 .bar{height:8px;border-radius:4px;background:var(--key);overflow:hidden}.bar i{display:block;height:100%;background:var(--pen);border-radius:4px}
-.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--key);border-radius:12px;padding:4px}
-.seg button{font:inherit;font-size:14px;color:var(--ink);background:none;border:0;border-radius:9px;min-height:40px;cursor:pointer}
+.seg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;background:var(--key);border-radius:12px;padding:4px}
+.seg button{font:inherit;font-size:13px;padding:0 2px;color:var(--ink);background:none;border:0;border-radius:9px;min-height:40px;cursor:pointer}
 .seg button.on{background:var(--pen);color:var(--bg);font-weight:500}
 .fig{position:relative;height:190px}.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 .fig text{font:12px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fill:var(--mute)}
@@ -210,6 +215,8 @@ textarea.inp{font-size:13px;height:84px;resize:none;word-break:break-all}
  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="wT">
   <h2 id="wT">Resolvido</h2>
   <div class="big" id="wTime">0:00</div>
+  <div class="pts" id="wPts"></div>
+  <div class="brk" id="wBreak"></div>
   <p id="wInfo"></p>
   <button class="btn pri" id="winNew">Novo jogo</button>
   <button class="btn" id="winStats">Ver estatísticas</button>
@@ -271,8 +278,11 @@ textarea.inp{font-size:13px;height:84px;resize:none;word-break:break-all}
   <div class="seg" id="cSeg"></div>
   <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Tempos das últimas vitórias"></svg><div class="tip" id="tip" hidden></div></div>
   <p class="small" id="cSum"></p>
+  <h3>Melhores pontuações</h3>
+  <div id="topList"></div>
   <h3>Por nível</h3>
   <div id="lvStats"></div>
+  <p class="small">A pontuação parte da dificuldade do jogo, calculada pelas técnicas que ele exige. Terminar abaixo do tempo de referência do nível dá bônus. Cada erro tira 8% da base, cada dica 12% e cada casa completada automaticamente 2%.</p>
   <p class="small">Contam as partidas vencidas, as perdidas pelo limite de erros e as abandonadas, ou seja, quando você começa um jogo novo sem terminar o atual. A partida em andamento entra no tempo jogado, mas ainda não entra na porcentagem de vitórias.</p>
   <button class="btn" data-close>Voltar ao jogo</button>
   <button class="btn warn" id="resetBtn">Zerar estatísticas</button>
@@ -283,7 +293,8 @@ textarea.inp{font-size:13px;height:84px;resize:none;word-break:break-all}
 
 <script>
 {
-const LV={facil:{n:'Fácil',tier:1,floor:36},medio:{n:'Médio',tier:2,floor:28},dificil:{n:'Difícil',tier:3,floor:22},expert:{n:'Expert',tier:4,floor:17}};
+const LV={facil:{n:'Fácil',tier:1,floor:36,hard:1,par:360},medio:{n:'Médio',tier:2,floor:28,hard:1,par:600},dificil:{n:'Difícil',tier:3,floor:22,hard:2,par:900},expert:{n:'Expert',tier:4,floor:17,hard:2,par:1320},mestre:{n:'Mestre',tier:5,floor:17,hard:2,par:1800}};
+const TIERN=['','Fácil','Médio','Difícil','Expert','Mestre'];
 const R=i=>i/9|0,C=i=>i%9,B=i=>(R(i)/3|0)*3+(C(i)/3|0);
 const PEERS=[],PS=[];
 for(let i=0;i<81;i++){const p=[];for(let j=0;j<81;j++)if(j!==i&&(R(j)===R(i)||C(j)===C(i)||B(j)===B(i)))p.push(j);PEERS.push(p);PS.push(new Set(p))}
@@ -411,9 +422,100 @@ function tXY(g,c){
  }
  return null;
 }
-const TECH=[[1,tHiddenSingle],[1,tNakedSingle],[2,tLocked],[3,(g,c)=>tNaked(g,c,2)],[3,(g,c)=>tHidden(g,c,2)],[3,(g,c)=>tNaked(g,c,3)],[3,(g,c)=>tHidden(g,c,3)],[4,(g,c)=>tFish(g,c,2)],[4,tXY],[4,(g,c)=>tFish(g,c,3)]];
-function findStep(g,c,maxTier=9){for(const[t,f]of TECH){if(t>maxTier)break;const s=f(g,c);if(s)return s}return null}
-function logicSolve(puz,maxTier){const g=puz.slice(),c=initCand(g);let max=0;for(let n=0;n<400;n++){if(!g.includes(0))return max;const s=findStep(g,c,maxTier);if(!s)return 99;if(s.tier>max)max=s.tier;applyStep(g,c,s)}return 99}
+/* ---------- técnicas do nível Mestre ---------- */
+const cap=x=>x.replace(/^./,y=>y.toUpperCase());
+function links(c,d){const L=[];for(let u=0;u<27;u++){const p=UNITS[u].filter(i=>c[i]>>d&1);if(p.length===2)L.push([p[0],p[1],u])}return L}
+function tTurbot(g,c){
+ for(let d=1;d<=9;d++){const L=links(c,d);
+  for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++){
+   if(L[x][2]===L[y][2])continue;
+   for(const[a,b]of[[L[x][0],L[x][1]],[L[x][1],L[x][0]]])for(const[e,f]of[[L[y][0],L[y][1]],[L[y][1],L[y][0]]]){
+    const set=new Set([a,b,e,f]);if(set.size<4||!PS[b].has(e))continue;
+    const el=[];for(let i=0;i<81;i++)if(!set.has(i)&&c[i]>>d&1&&PS[i].has(a)&&PS[i].has(f))el.push([i,d]);
+    if(!el.length)continue;
+    const ux=L[x][2],uy=L[y][2],rr=ux<9&&uy<9,cc=ux>=9&&ux<18&&uy>=9&&uy<18,rc=(ux<9&&uy>=9&&uy<18)||(uy<9&&ux>=9&&ux<18);
+    const name=rr||cc?'Skyscraper':rc?'2-String Kite':'Peixe-turbo';
+    return{name,elim:el,hu:[...UNITS[ux],...UNITS[uy]],hp:[a,b,e,f],ht:el.map(z=>z[0]),
+     nudge:'Procure o '+d+' '+uIn(ux)+' e '+uIn(uy)+': nos dois lugares ele tem só duas posições.',
+     text:uIn(ux).replace(/^./,z=>z.toUpperCase())+', o '+d+' só pode estar na '+cName(a)+' ou na '+cName(b)+'. '+cap(uIn(uy))+', só na '+cName(e)+' ou na '+cName(f)+'. A '+cName(b)+' e a '+cName(e)+' se enxergam, então no máximo uma delas é '+d+'. Isso obriga a '+cName(a)+' ou a '+cName(f)+' a ser '+d+'. Então o '+d+' sai das casas que enxergam essas duas (em laranja).'};
+   }
+  }
+ }
+ return null;
+}
+function tXYZ(g,c){
+ for(let p=0;p<81;p++){if(pc(c[p])!==3)continue;
+  const w=PEERS[p].filter(q=>pc(c[q])===2&&!(c[q]&~c[p]));
+  for(const q1 of w)for(const q2 of w){if(q1>=q2||c[q1]===c[q2]||(c[q1]|c[q2])!==c[p])continue;
+   const zm=c[q1]&c[q2];if(pc(zm)!==1)continue;const z=bits(zm)[0],el=[];
+   for(let i=0;i<81;i++)if(i!==p&&i!==q1&&i!==q2&&c[i]>>z&1&&PS[i].has(p)&&PS[i].has(q1)&&PS[i].has(q2))el.push([i,z]);
+   if(el.length)return{name:'XYZ-Wing',elim:el,hu:[],hp:[p,q1,q2],ht:el.map(e=>e[0]),
+    nudge:'Procure uma casa com três números possíveis que enxerga duas casas com dois números cada.',
+    text:'A casa da '+cName(p)+' aceita '+lst(bits(c[p]))+'. Ela enxerga a '+cName(q1)+' ('+lst(bits(c[q1]))+') e a '+cName(q2)+' ('+lst(bits(c[q2]))+'). Em qualquer caso, uma dessas três casas vai ser '+z+'. Então o '+z+' sai das casas que enxergam as três (em laranja).'};
+  }
+ }
+ return null;
+}
+function tW(g,c){
+ const bv=[];for(let i=0;i<81;i++)if(pc(c[i])===2)bv.push(i);
+ for(let x=0;x<bv.length;x++)for(let y=x+1;y<bv.length;y++){
+  const p=bv[x],q=bv[y];if(c[p]!==c[q]||PS[p].has(q))continue;const[a,b]=bits(c[p]);
+  for(const[lk,ot]of[[a,b],[b,a]])for(const[m,n,u]of links(c,lk)){
+   if(m===p||m===q||n===p||n===q)continue;
+   if(!((PS[m].has(p)&&PS[n].has(q))||(PS[m].has(q)&&PS[n].has(p))))continue;
+   const el=[];for(let i=0;i<81;i++)if(i!==p&&i!==q&&c[i]>>ot&1&&PS[i].has(p)&&PS[i].has(q))el.push([i,ot]);
+   if(el.length)return{name:'W-Wing',elim:el,hu:UNITS[u],hp:[p,q,m,n],ht:el.map(e=>e[0]),
+    nudge:'Procure duas casas distantes com o mesmo par de números possíveis.',
+    text:'A '+cName(p)+' e a '+cName(q)+' só aceitam '+a+' ou '+b+'. '+cap(uIn(u))+', o '+lk+' só cabe em duas casas, e cada uma enxerga uma das duas casas do par. Se as duas fossem '+lk+', não sobraria lugar para o '+lk+' '+uIn(u)+'. Então pelo menos uma delas é '+ot+', e o '+ot+' sai das casas que enxergam as duas (em laranja).'};
+  }
+ }
+ return null;
+}
+function tUR(g,c){
+ for(let r1=0;r1<9;r1++)for(let r2=r1+1;r2<9;r2++)for(let c1=0;c1<9;c1++)for(let c2=c1+1;c2<9;c2++){
+  const cs=[r1*9+c1,r1*9+c2,r2*9+c1,r2*9+c2];
+  if(cs.some(i=>g[i])||new Set(cs.map(B)).size!==2)continue;
+  const bv=cs.filter(i=>pc(c[i])===2);if(bv.length!==3)continue;const m=c[bv[0]];if(!bv.every(i=>c[i]===m))continue;
+  const f=cs.find(i=>!bv.includes(i));if((c[f]&m)!==m)continue;
+  const ds=bits(m);
+  return{name:'Retângulo único',elim:ds.map(d=>[f,d]),hu:[],hp:bv,ht:[f],
+   nudge:'Procure quatro casas em retângulo, em dois quadrantes, quase todas com o mesmo par de números.',
+   text:'As casas destacadas formam um retângulo com a '+cName(f)+', ocupando dois quadrantes, e três delas só aceitam '+lst(ds)+'. Se a quarta também ficasse com '+ds[0]+' ou '+ds[1]+', os dois números poderiam trocar de lugar e o jogo teria duas soluções. Como o jogo tem solução única, '+lst(ds)+' saem da '+cName(f)+'.'};
+ }
+ return null;
+}
+function tColor(g,c){
+ for(let d=1;d<=9;d++){
+  const L=links(c,d);if(L.length<3)continue;
+  const adj=new Map();for(const[a,b]of L){if(!adj.has(a))adj.set(a,new Set());if(!adj.has(b))adj.set(b,new Set());adj.get(a).add(b);adj.get(b).add(a)}
+  const seen=new Set();
+  for(const st of adj.keys()){
+   if(seen.has(st))continue;const col=new Map([[st,0]]),q=[st];seen.add(st);
+   while(q.length){const x=q.pop();for(const y of adj.get(x))if(!col.has(y)){col.set(y,1-col.get(x));seen.add(y);q.push(y)}}
+   if(col.size<4)continue;
+   const A=[...col].filter(e=>e[1]===0).map(e=>e[0]),Bc=[...col].filter(e=>e[1]===1).map(e=>e[0]);
+   for(const[S0,S1,nm]of[[A,Bc,'azul'],[Bc,A,'amarela']]){
+    const clash=S0.some((x,i)=>S0.some((y,j)=>j>i&&PS[x].has(y)));
+    if(clash)return{name:'Coloração simples',elim:S0.map(x=>[x,d]),hu:S1,hp:S0,ht:S0,
+     nudge:'Siga o '+d+' pelos lugares onde ele só tem duas posições.',
+     text:'Ligando as casas onde o '+d+' só tem duas posições, elas se dividem em duas cores: em cada par ligado, uma cor é '+d+' e a outra não. Duas casas da mesma cor se enxergam, e as duas não podem ser '+d+'. Então essa cor inteira está errada, e o '+d+' sai dessas casas.'};
+   }
+   const el=[];for(let i=0;i<81;i++)if(!col.has(i)&&c[i]>>d&1&&A.some(x=>PS[i].has(x))&&Bc.some(x=>PS[i].has(x)))el.push([i,d]);
+   if(el.length)return{name:'Coloração simples',elim:el,hu:Bc,hp:A,ht:el.map(e=>e[0]),
+    nudge:'Siga o '+d+' pelos lugares onde ele só tem duas posições.',
+    text:'Ligando as casas onde o '+d+' só tem duas posições, elas se dividem em duas cores, azul e amarela: em cada par ligado, uma cor é '+d+' e a outra não. Uma das cores com certeza tem o '+d+'. As casas em laranja enxergam as duas cores, então não podem ser '+d+'.'};
+  }
+ }
+ return null;
+}
+const TECH=[[1,1,tHiddenSingle],[1,2,tNakedSingle],[2,6,tLocked],[3,10,(g,c)=>tNaked(g,c,2)],[3,14,(g,c)=>tHidden(g,c,2)],[3,16,(g,c)=>tNaked(g,c,3)],[3,20,(g,c)=>tHidden(g,c,3)],
+ [4,24,(g,c)=>tFish(g,c,2)],[4,28,tXY],[4,32,(g,c)=>tFish(g,c,3)],[5,34,tTurbot],[5,36,tXYZ],[5,38,tW],[5,40,tUR],[5,44,tColor]];
+function findStep(g,c,maxTier=9,noUR=false){for(const[t,p,f]of TECH){if(t>maxTier)break;if(noUR&&f===tUR)continue;const s=f(g,c);if(s){s.tier=t;s.pts=p;return s}}return null}
+function rate(puz,maxTier=9,noUR=false){const g=puz.slice(),c=initCand(g),r={max:0,score:0,n:[0,0,0,0,0,0]};for(let k=0;k<500;k++){if(!g.includes(0))return r;const s=findStep(g,c,maxTier,noUR);if(!s){r.max=99;return r}if(s.tier>r.max)r.max=s.tier;r.score+=s.pts;r.n[s.tier]++;applyStep(g,c,s)}r.max=99;return r}
+// a geração confere a unicidade sem o retângulo único, que depende dela
+function logicSolve(puz,maxTier){return rate(puz,maxTier,true).max}
+const fits=(lv,r)=>r.max===LV[lv].tier&&r.n[LV[lv].tier]>=LV[lv].hard;
+const quality=(lv,r)=>r.max>LV[lv].tier?-1:r.max*100+Math.min(r.n[r.max]||0,9)*10;
 
 /* ---------- gerador ---------- */
 function cand(g,i){let m=0;for(const p of PEERS[i])m|=1<<g[p];const a=[];for(let d=1;d<=9;d++)if(!(m>>d&1))a.push(d);return a}
@@ -426,7 +528,8 @@ function attempt(lv){
   const b=puz[i];puz[i]=0;
   if(logicSolve(puz,T)<=T)left--;else puz[i]=b;
  }
- return{puz,sol,tier:logicSolve(puz,9)};
+ const r=rate(puz);
+ return{puz,sol,r,tier:r.max,ok:fits(lv,r),q:quality(lv,r)};
 }
 
 
@@ -527,21 +630,33 @@ function place(i,d){
  if(d===S.sol[i]&&O.autoClean){for(const p of PEERS[i])if(S.notes[p]>>d&1)ch.push({i:p,v:S.val[p],n:S.notes[p]&~(1<<d)})}
  apply(ch);popped=i;
 }
+const nf=n=>Number(n).toLocaleString('pt-BR');
+function calcScore(){
+ const rs=S.rs||rate(S.puz).score,base=rs*10,par=LV[S.lv].par;
+ const tb=Math.round(base*Math.max(0,(par-S.t)/par)),pe=Math.round(base*.08*S.err),ph=Math.round(base*.12*S.hints),pa=Math.round(base*.02*(S.autoN||0));
+ const total=Math.round(Math.max(base*.1,base+tb-pe-ph-pa)/10)*10;
+ return{base,tb,pe,ph,pa,total};
+}
 function recordEnd(won){
- const L=lvS(S.lv);L.p++;L.t+=S.t;
- if(won){L.w++;L.wt+=S.t;if(!L.best||S.t<L.best)L.best=S.t;if(!S.err&&!S.hints)L.perfect++;ST.streak++;ST.bs=Math.max(ST.bs,ST.streak);
-  ST.hist.push({d:Date.now(),lv:S.lv,t:S.t,e:S.err,h:S.hints});if(ST.hist.length>400)ST.hist.shift();
+ const L=lvS(S.lv);L.p++;L.t+=S.t;let sc=null;
+ if(won){sc=calcScore();S.score=sc.total;if(!L.bestScore||sc.total>L.bestScore)L.bestScore=sc.total;
+  ST.top=(ST.top||[]).concat([{s:sc.total,lv:S.lv,t:S.t,d:Date.now(),daily:S.daily||null}]).sort((a,b)=>b.s-a.s).slice(0,10);L.w++;L.wt+=S.t;if(!L.best||S.t<L.best)L.best=S.t;if(!S.err&&!S.hints)L.perfect++;ST.streak++;ST.bs=Math.max(ST.bs,ST.streak);
+  ST.hist.push({d:Date.now(),lv:S.lv,t:S.t,e:S.err,h:S.hints,s:sc.total});if(ST.hist.length>400)ST.hist.shift();
   if(S.daily)ST.dd[S.daily]={t:S.t,e:S.err,h:S.hints}}
  else ST.streak=0;
- saveST();
+ saveST();return sc;
 }
 function after(){
  if(!S.done&&S.val.every((v,i)=>v===S.sol[i])){
-  const prev=lvS(S.lv).best;S.done=true;recordEnd(true);
-  const rec=!prev||S.t<prev;snd('win');
+  const L=lvS(S.lv),prev=L.best,prevS=L.bestScore||0;S.done=true;const sc=recordEnd(true);
+  const recT=!prev||S.t<prev,recS=sc.total>prevS;snd('win');
   $('#wT').textContent=S.daily?'Desafio de '+dShort(S.daily)+' resolvido':'Resolvido';
-  $('#wTime').textContent=fmt(S.t);
-  $('#wInfo').textContent=LV[S.lv].n+'. Erros: '+S.err+'. Dicas: '+S.hints+'. '+(S.auto?'Completado automaticamente no final. ':'')+(rec?(prev?'Novo recorde neste nível.':'Primeiro recorde neste nível.'):'Recorde: '+fmt(prev)+'.');
+  $('#wTime').textContent=fmt(S.t);$('#wPts').textContent=nf(sc.total)+' pontos';
+  const rows=[['Dificuldade do jogo',sc.base,'+'],['Bônus de tempo',sc.tb,'+'],['Erros ('+S.err+')',sc.pe,'−'],['Dicas ('+S.hints+')',sc.ph,'−'],['Completado automaticamente ('+(S.autoN||0)+(S.autoN===1?' casa)':' casas)'),sc.pa,'−']];
+  $('#wBreak').innerHTML=rows.filter((r,i)=>i<2||r[1]).map(r=>'<div><span>'+r[0]+'</span><b>'+r[2]+nf(r[1])+'</b></div>').join('');
+  const msg=[];if(recT)msg.push(prev?'Novo recorde de tempo no '+LV[S.lv].n+'.':'Primeiro recorde de tempo no '+LV[S.lv].n+'.');else msg.push('Recorde de tempo: '+fmt(prev)+'.');
+  if(recS)msg.push(prevS?'Novo recorde de pontos.':'Primeiro recorde de pontos.');else msg.push('Recorde de pontos: '+nf(prevS)+'.');
+  $('#wInfo').textContent=msg.join(' ');
   setTimeout(()=>{$('#win').hidden=false;$('#winNew').focus()},350);
  }else if(!S.done&&!O.showErr&&!S.val.includes(0))toast('O tabuleiro está completo, mas há números errados. Use a dica para encontrá-los.');
  save();render();
@@ -571,6 +686,7 @@ function autoSolve(){
  if(!S||S.done||solving)return;
  closeHint();solving=true;sel=-1;S.auto=true;
  const rest=[];for(let i=0;i<81;i++)if(S.val[i]!==S.sol[i])rest.push(i);
+ S.autoN=rest.length;
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,gap=reduce?40:Math.max(70,Math.min(160,2400/rest.length));
  render();
  let k=0;
@@ -602,7 +718,7 @@ function showHint(){
  const s=buildHint();if(!s)return;
  S.hints++;save();
  H={s,stage:1,c:s.c||[]};
- $('#hTag').textContent='Dica'+(s.tier?' · técnica de nível '+['','Fácil','Médio','Difícil','Expert'][s.tier]:'');
+ $('#hTag').textContent='Dica'+(s.tier?' · técnica de nível '+TIERN[s.tier]:'');
  $('#hName').textContent=s.name;$('#hText').textContent=s.nudge;$('#hNext').textContent='Mostrar explicação';
  $('#hint').hidden=false;render();
 }
@@ -626,8 +742,8 @@ function genAsync(lv,seed,cb){
   const t0=performance.now();rnd=r;
   while(performance.now()-t0<35){
    const a=attempt(lv);n++;
-   if(!best||(a.tier<=T&&a.tier>best.tier))best=a;
-   if(a.tier===T||n>=800){rnd=Math.random;cb(best);return}
+   if(!best||a.q>best.q)best=a;
+   if(a.ok||n>=1500){rnd=Math.random;cb(best);return}
   }
   rnd=Math.random;setTimeout(step,0);
  };
@@ -637,12 +753,12 @@ function startGame(lv,daily){
  if(started())recordEnd(false);
  closeSheets();closeHint();paused=false;$('#pause').hidden=true;
  S&&(S.done=true);$('#gen').hidden=false;
- genAsync(lv,daily?hashStr('sudoku-'+daily):null,({puz,sol})=>{
-  S=fresh(puz,sol,lv,daily);sel=-1;notesMode=false;$('#gen').hidden=true;save();render();
+ genAsync(lv,daily?hashStr('sudoku-'+daily):null,({puz,sol,r})=>{
+  S=fresh(puz,sol,lv,daily);S.rs=r.score;sel=-1;notesMode=false;$('#gen').hidden=true;save();render();
  });
 }
 function openNew(){
- $('#lvls').innerHTML=Object.entries(LV).map(([k,o])=>{const L=lvS(k);return'<button class="lvl" data-lv="'+k+'"><b>'+o.n+'</b>'+(L.best?'<span>Recorde '+fmt(L.best)+'</span>':'')+'</button>'}).join('');
+ $('#lvls').innerHTML=Object.entries(LV).map(([k,o])=>{const L=lvS(k);return'<button class="lvl" data-lv="'+k+'"><b>'+o.n+'</b>'+(L.best?'<span>Recorde '+fmt(L.best)+(L.bestScore?'<br>'+nf(L.bestScore)+' pontos':'')+'</span>':'')+'</button>'}).join('');
  $('#shP').textContent=started()?'Escolha o nível. O jogo atual conta como abandonado nas estatísticas.':'Escolha o nível.';
  closeSheets();$('#sheet').hidden=false;$('#lvls button').focus();
 }
@@ -680,10 +796,12 @@ $('#mNext').addEventListener('click',()=>{calM.setMonth(calM.getMonth()+1);openD
 function openStats(){
  const ks=Object.keys(LV),sum=f=>ks.reduce((a,k)=>a+f(lvS(k)),0);
  const p=sum(L=>L.p),w=sum(L=>L.w),cur=S&&!S.done?S.t:0;
- const tl=[['main',p?Math.round(w/p*100)+'%':'0%','Vitórias'],['',p,'Partidas'],['',w,'Vencidas'],['',fmtLong(sum(L=>L.t)+cur),'Tempo jogado'],['',sum(L=>L.perfect),'Sem erros nem dicas'],['',ST.streak,'Sequência atual'],['',ST.bs,'Melhor sequência'],['',Object.keys(ST.dd).length,'Desafios do dia'],['',dStreak(),'Dias seguidos de desafio']];
+ const tl=[['main',p?Math.round(w/p*100)+'%':'0%','Vitórias'],['',p,'Partidas'],['',w,'Vencidas'],['',fmtLong(sum(L=>L.t)+cur),'Tempo jogado'],['',sum(L=>L.perfect),'Sem erros nem dicas'],['',ST.streak,'Sequência atual'],['',ST.bs,'Melhor sequência'],['',nf(Math.max(0,...ks.map(k=>lvS(k).bestScore||0))),'Melhor pontuação'],['',Object.keys(ST.dd).length,'Desafios do dia'],['',dStreak(),'Dias seguidos de desafio']];
  $('#tiles').innerHTML=tl.map(([c,v,l])=>'<div class="tile '+c+'"><b>'+v+'</b><span>'+l+'</span></div>').join('');
  $('#lvStats').innerHTML=ks.map(k=>{const L=lvS(k),q=L.p?Math.round(L.w/L.p*100):0;
-  return'<div class="lvrow"><div class="h"><b>'+LV[k].n+'</b><span>'+q+'%</span></div><div class="bar"><i style="width:'+q+'%"></i></div><p class="small">'+(L.p?L.w+' de '+L.p+(L.w===1?' vencida.':' vencidas.')+(L.w?' Recorde '+fmt(L.best)+'. Média '+fmt(Math.round(L.wt/L.w))+'.':''):'Nenhuma partida ainda.')+'</p></div>'}).join('');
+  return'<div class="lvrow"><div class="h"><b>'+LV[k].n+'</b><span>'+q+'%</span></div><div class="bar"><i style="width:'+q+'%"></i></div><p class="small">'+(L.p?L.w+' de '+L.p+(L.w===1?' vencida.':' vencidas.')+(L.w?' Recorde de tempo '+fmt(L.best)+'. Média '+fmt(Math.round(L.wt/L.w))+'.'+(L.bestScore?' Recorde de pontos '+nf(L.bestScore)+'.':''):''):'Nenhuma partida ainda.')+'</p></div>'}).join('');
+ const tp=(ST.top||[]).slice(0,5);
+ $('#topList').innerHTML=tp.length?'<div class="top">'+tp.map((x,i)=>{const d=new Date(x.d);return'<span class="n">'+(i+1)+'.</span><b>'+nf(x.s)+' pontos</b><span>'+LV[x.lv].n+', '+fmt(x.t)+', '+pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'</span>'}).join('')+'</div>':'<p class="small">Vença uma partida para aparecer aqui.</p>';
  chartLv=S?S.lv:'medio';
  $('#cSeg').innerHTML=ks.map(k=>'<button data-lv="'+k+'">'+LV[k].n+'</button>').join('');
  $('#resetBtn').textContent='Zerar estatísticas';
@@ -728,7 +846,7 @@ let resetT=0;
 $('#resetBtn').addEventListener('click',()=>{
  const b=$('#resetBtn');
  if(!resetT){b.textContent='Toque de novo para confirmar';resetT=setTimeout(()=>{resetT=0;b.textContent='Zerar estatísticas'},4000);return}
- clearTimeout(resetT);resetT=0;ST.lv={};ST.streak=0;ST.bs=0;ST.hist=[];ST.dd={};for(const k in oldBest)delete oldBest[k];store('sudoku-best-v1',{});Object.keys(LV).forEach(lvS);saveST();openStats();
+ clearTimeout(resetT);resetT=0;ST.lv={};ST.streak=0;ST.bs=0;ST.hist=[];ST.dd={};ST.top=[];for(const k in oldBest)delete oldBest[k];store('sudoku-best-v1',{});Object.keys(LV).forEach(lvS);saveST();openStats();
 });
 
 /* ---------- ajustes ---------- */
@@ -757,7 +875,7 @@ $('#newBtn').addEventListener('click',openNew);
 $('#lvls').addEventListener('click',e=>{const b=e.target.closest('.lvl');if(b)startGame(b.dataset.lv)});
 $('#winNew').addEventListener('click',openNew);$('#overNew').addEventListener('click',openNew);
 $('#winStats').addEventListener('click',openStats);
-$('#retryBtn').addEventListener('click',()=>{closeSheets();S=fresh(S.puz,S.sol,S.lv,S.daily);sel=-1;save();render()});
+$('#retryBtn').addEventListener('click',()=>{closeSheets();const rs=S.rs;S=fresh(S.puz,S.sol,S.lv,S.daily);S.rs=rs;sel=-1;save();render()});
 $('#undoBtn').addEventListener('click',undo);$('#eraseBtn').addEventListener('click',erase);
 $('#hintBtn').addEventListener('click',showHint);$('#autoBtn').addEventListener('click',autoNotes);
 $('#notesBtn').addEventListener('click',()=>{notesMode=!notesMode;render()});
